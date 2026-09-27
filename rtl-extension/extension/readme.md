@@ -1,11 +1,25 @@
 
 ## 🚀 Features
 
-- **✅ Auto RTL Detection:** Automatically detects Arabic content and switches direction (`dir="auto"`) for paragraphs, lists, and headers.
-- **📄 Markdown files:** RTL in the `.md` editor and preview; fenced code stays LTR.
-- **🛡️ Smart Code Isolation:** Keeps code blocks strictly **LTR** to prevent syntax highlighting breakage.
-- **📝 Fixed List Formatting:** Corrects bullet point alignment and margins for RTL lists (UL/OL).
-- **⚡ Status Bar Toggle:** Quickly enable/disable RTL support from the status bar.
-- **⌨️ Keyboard Shortcut:** Toggle with `Ctrl+Alt+R` (Windows/Linux) or `Cmd+Alt+R` (Mac).
-- **⚙️ Configurable:** Customize font families and auto-enable behavior in VS Code settings.
-- **🔄 Cursor / Glass:** Patches workbench CSS/JS for chat and Markdown Preview (see [RTL on GitHub](https://github.com/jopro00/RTL)).
+- **✅ Auto RTL Detection:** Arabic chat and rendered Markdown use RTL layout.
+- **📄 Markdown Preview:** Arabic `.md` files flow RTL in the **Preview** tab only (not the raw Markdown source view). Fenced code stays LTR.
+- **🛡️ Smart Code Isolation:** Code blocks stay **LTR** so syntax highlighting does not break.
+- **📝 Fixed List Formatting:** RTL list margins (UL/OL).
+- **⚡ Status Bar Toggle:** Enable/disable from the status bar.
+- **⌨️ Keyboard Shortcut:** `Ctrl+Alt+R` (Windows/Linux) or `Cmd+Alt+R` (Mac).
+- **⚙️ Configurable:** **Arabic RTL Patcher → Auto Enable** (default on).
+
+## طريقة التشغيل
+
+1. ثبّت الـ VSIX → **Enable RTL**
+2. اقفل Cursor بالكامل
+3. **أول مرة:** شغّل Cursor **Administrator** وفعّل RTL
+4. بعد كده شغّل Cursor عادي
+
+See [README on GitHub](https://github.com/jopro00/RTL#-طريقة-التشغيل-windows) for full steps.
+
+## Markdown
+
+استخدم تبويب **Preview** في Cursor لقراءة العربي RTL. تبويب **Markdown** (المصدر) مش معاينة RTL.
+
+Repository: [github.com/jopro00/RTL](https://github.com/jopro00/RTL)
