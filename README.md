@@ -1,49 +1,35 @@
 # RTL — Arabic RTL for Cursor / VS Code
 
-إضافة تعدّل Cursor (والمحررات المتوافقة) عشان **الشات العربي** و**معاينة Markdown (Preview)** تظهر **من اليمين لليسار**. بلوكات الكود تفضل LTR.
-
-Extension that patches Cursor so **Arabic chat** and **Markdown Preview** flow **right-to-left**. Code blocks stay LTR.
+Extension that patches Cursor (and compatible editors) so **Arabic chat** and **Markdown Preview** flow **right-to-left**. Code blocks stay LTR.
 
 Repository: [https://github.com/jopro00/RTL](https://github.com/jopro00/RTL)
 
 ---
 
-## طريقة التشغيل (Windows)
+## How to run (Windows)
 
-اتبع الخطوات **بالترتيب**:
+Follow these steps **in order**:
 
-1. **ثبّت الإضافة:** من [Releases](https://github.com/jopro00/RTL/releases) حمّل `rtl-*.vsix`، ثم في Cursor: **Extensions** → **⋯** → **Install from VSIX…**
-2. **فعّل RTL:** Command Palette → **RTL Patcher: Enable RTL for Arabic Chat** (أو من شريط الحالة **RTL**).
-3. **اقفل Cursor بالكامل** (File → Exit) — مش Reload لوحده.
-4. **أول مرة فقط:** شغّل Cursor **Run as administrator**، ولو محتاج فعّل RTL تاني من Command Palette.
-5. **بعد كده:** افتح Cursor عادي (من غير Admin) — الإضافة تفضل شغالة؛ مش محتاج Admin كل مرة.
+1. **Install the extension:** Download `rtl-*.vsix` from [Releases](https://github.com/jopro00/RTL/releases). In Cursor: **Extensions** → **⋯** → **Install from VSIX…**
+2. **Enable RTL:** Command Palette → **RTL Patcher: Enable RTL for Arabic Chat** (or use the **RTL** status bar item).
+3. **Quit Cursor completely** (File → Exit). Reload alone is not enough.
+4. **First time only:** Start Cursor **Run as administrator**. Enable RTL again from the Command Palette if needed.
+5. **After that:** Open Cursor normally (without Admin). The extension keeps working; you do not need Admin every time.
 
-لو ظهرت رسالة **Permission denied** أثناء التفعيل، الخطوة 4 (Admin **مرة واحدة**) هي اللي تحلها.
+If you see **Permission denied** while enabling, step 4 (Admin **once**) fixes it.
 
 ---
 
-## ملفات Markdown (`.md`)
+## Markdown files (`.md`)
 
-في Cursor، العربي في الملفات يظهر RTL في **تبويب Preview** (زر **Preview** فوق الملف)، مش في وضع **Markdown** اللي بيعرض المصدر/الكود.
+In Cursor, Arabic in Markdown files is RTL in the **Preview** tab (the **Preview** button above the file), not in the **Markdown** tab that shows the raw source.
 
-| الوضع | RTL عربي |
+| Mode | Arabic RTL |
 | --- | --- |
-| **Preview** | ✅ من اليمين لليسار (عناوين، فقرات، جداول) |
-| **Markdown** (مصدر) | ❌ مش هدف الإضافة؛ استخدم Preview للقراءة |
+| **Preview** | Yes — right-to-left (headings, paragraphs, tables) |
+| **Markdown** (source) | No — use **Preview** to read Arabic RTL |
 
-الكود داخل `` ` `` أو ``` ``` يفضل **LTR** في Preview عشان ما يتكسرش.
-
----
-
-## Install (English)
-
-1. Download `.vsix` from [Releases](https://github.com/jopro00/RTL/releases).
-2. **Install from VSIX…** in Extensions.
-3. **Enable RTL** from the command palette.
-4. **Quit Cursor completely**, reopen.
-5. **First run only:** start Cursor **as Administrator**, enable RTL if prompted; afterward use Cursor normally.
-
-Markdown RTL applies in the **Preview** tab only, not the raw Markdown source editor.
+Inline code and fenced code blocks stay **LTR** in Preview so formatting does not break.
 
 ---
 
