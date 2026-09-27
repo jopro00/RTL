@@ -1,0 +1,76 @@
+{
+	"name": "rtl",
+	"displayName": "RTL",
+	"description": "Fixes Arabic RTL in Cursor chat and Markdown files (CSS-only, safe for Glass UI).",
+	"version": "1.0.6",
+	"publisher": "jopro00",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/jopro00/RTL.git"
+	},
+	"bugs": {
+		"url": "https://github.com/jopro00/RTL/issues"
+	},
+	"homepage": "https://github.com/jopro00/RTL#readme",
+	"icon": "icon.png",
+	"engines": {
+		"vscode": "^1.75.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		"onStartupFinished"
+	],
+	"main": "./extension.js",
+	"contributes": {
+		"markdown.previewStyles": [
+			"./preview-rtl.css"
+		],
+		"commands": [
+			{
+				"command": "antigravity.enableRtl",
+				"title": "Enable RTL for Arabic Chat",
+				"category": "RTL Patcher"
+			},
+			{
+				"command": "antigravity.disableRtl",
+				"title": "Disable RTL (Restore Default)",
+				"category": "RTL Patcher"
+			},
+			{
+				"command": "antigravity.toggleRtl",
+				"title": "Toggle RTL",
+				"category": "RTL Patcher"
+			},
+			{
+				"command": "antigravity.showMenu",
+				"title": "Show RTL Menu",
+				"category": "RTL Patcher"
+			}
+		],
+		"keybindings": [
+			{
+				"command": "antigravity.toggleRtl",
+				"key": "ctrl+alt+r",
+				"mac": "cmd+alt+r",
+				"when": "editorTextFocus"
+			}
+		],
+		"configuration": {
+			"title": "Arabic RTL Patcher",
+			"properties": {
+				"antigravity.autoEnable": {
+					"type": "boolean",
+					"default": true,
+					"description": "Automatically enable RTL patch on startup if not already applied."
+				}
+			}
+		},
+		"configurationDefaults": {
+			"[markdown]": {
+				"editor.unicodeBidirectionalTextRendering": true
+			}
+		}
+	}
+}

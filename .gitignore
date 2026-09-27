@@ -1,0 +1,6 @@
+*.vsix
+*.zip
+*.rtlbak
+.DS_Store
+Thumbs.db
+node_modules/
