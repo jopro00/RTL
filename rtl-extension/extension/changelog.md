@@ -2,6 +2,10 @@
 
 All notable changes to the "antigravity-rtl-patcher" extension will be documented in this file.
 
+## [1.0.11] - 2026-09-27
+### Changed
+- Rebrand to **RTL Everywhere** (display name, icon, publisher `jopro`).
+
 ## [1.0.10] - 2026-09-27
 ### Fixed
 - Cursor Markdown **Preview** stayed LTR because CSS never reached the React editor: workbench CSS layers/`!important` and TipTap do not set `dir` on `.markdown-editor-react`.

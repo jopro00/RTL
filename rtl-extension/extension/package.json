@@ -1,9 +1,9 @@
 {
-	"name": "rtl",
-	"displayName": "RTL",
-	"description": "Fixes Arabic RTL in Cursor chat and Markdown files (CSS-only, safe for Glass UI).",
-	"version": "1.0.6",
-	"publisher": "jopro00",
+	"name": "rtl-everywhere",
+	"displayName": "RTL Everywhere",
+	"description": "Fixes Arabic RTL in AGENT chat and Markdown files (CSS-only, safe for Glass UI).",
+	"version": "1.0.11",
+	"publisher": "jopro",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/jopro00/RTL.git"

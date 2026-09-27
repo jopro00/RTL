@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 	<PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
 		<Metadata>
-			<Identity Language="en-US" Id="rtl" Version="1.0.6" Publisher="jopro00" />
-			<DisplayName>RTL</DisplayName>
-			<Description xml:space="preserve">Fixes Arabic RTL in Cursor chat and Markdown files (CSS-only, safe for Glass UI).</Description>
+			<Identity Language="en-US" Id="rtl-everywhere" Version="1.0.11" Publisher="jopro" />
+			<DisplayName>RTL Everywhere</DisplayName>
+			<Description xml:space="preserve">Fixes Arabic RTL in AGENT chat and Markdown files (CSS-only, safe for Glass UI).</Description>
 			<Tags>keybindings</Tags>
 			<Categories>Other</Categories>
 			<GalleryFlags>Public</GalleryFlags>
