@@ -1,9 +1,10 @@
 {
 	"name": "rtl-everywhere",
 	"displayName": "RTL Everywhere",
-	"description": "Fixes Arabic RTL in AGENT chat and Markdown files (CSS-only, safe for Glass UI).",
-	"version": "1.0.11",
-	"publisher": "jopro",
+	"description": "Arabic RTL in Cursor, Antigravity and Markdown preview, with readable English and LTR code.",
+	"version": "1.0.14",
+	"publisher": "jopro00",
+	"license": "MIT",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/jopro00/RTL.git"
@@ -23,6 +24,15 @@
 		"onStartupFinished"
 	],
 	"main": "./extension.js",
+	"files": [
+		"extension.js",
+		"rtl.css",
+		"preview-rtl.css",
+		"icon.png",
+		"LICENSE.txt",
+		"readme.md",
+		"changelog.md"
+	],
 	"contributes": {
 		"markdown.previewStyles": [
 			"./preview-rtl.css"
@@ -72,5 +82,8 @@
 				"editor.unicodeBidirectionalTextRendering": true
 			}
 		}
-	}
+	},
+	"extensionKind": [
+		"ui"
+	]
 }

@@ -1,6 +1,6 @@
-# RTL — Arabic RTL for Cursor / VS Code
+# RTL — Arabic RTL for Cursor / Antigravity / VS Code
 
-Extension that patches Cursor (and compatible editors) so **Arabic chat** and **Markdown Preview** flow **right-to-left**. Code blocks stay LTR.
+Extension that patches Cursor and Antigravity so **Arabic chat** and **Markdown Preview** read right-to-left. English paragraphs read left-to-right, and code blocks stay LTR. VS Code Markdown preview is supported too.
 
 Repository: [https://github.com/jopro00/RTL](https://github.com/jopro00/RTL)
 
@@ -10,13 +10,13 @@ Repository: [https://github.com/jopro00/RTL](https://github.com/jopro00/RTL)
 
 Follow these steps **in order**:
 
-1. **Install the extension:** Download `rtl-*.vsix` from [Releases](https://github.com/jopro00/RTL/releases). In Cursor: **Extensions** → **⋯** → **Install from VSIX…**
+1. **Install the extension:** Download `rtl-*.vsix` from [Releases](https://github.com/jopro00/RTL/releases), or build it below. In your editor: **Extensions** → **⋯** → **Install from VSIX…**
 2. **Enable RTL:** Command Palette → **RTL Patcher: Enable RTL for Arabic Chat** (or use the **RTL** status bar item).
-3. **Quit Cursor completely** (File → Exit). Reload alone is not enough.
-4. **First time only:** Start Cursor **Run as administrator**. Enable RTL again from the Command Palette if needed.
-5. **After that:** Open Cursor normally (without Admin). The extension keeps working; you do not need Admin every time.
+3. **Reload the editor** when prompted to load the new styles. If an old window still displays old styles, quit the editor completely and reopen it.
+4. **If permission is denied:** Start the editor with **Run as administrator**, then enable RTL again.
+5. **After that:** Open the editor normally (without Admin). Updates reapply the patch when needed.
 
-If you see **Permission denied** while enabling, step 4 (Admin **once**) fixes it.
+Existing patches upgrade automatically when **Auto Enable** is on. If it is off, run **Enable RTL for Arabic Chat** after installing an update. The status shows active only after every required target is ready.
 
 ---
 

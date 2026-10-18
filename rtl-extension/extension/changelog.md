@@ -2,6 +2,24 @@
 
 All notable changes to the "antigravity-rtl-patcher" extension will be documented in this file.
 
+## [1.0.14] - 2026-10-18
+### Fixed
+- Removed the bidi override that reversed English letters in Cursor Markdown rich text. Each paragraph now follows its own text direction; code stays LTR.
+- Added Antigravity's Markdown renderer, Lexical chat input, user messages and legacy Cascade webview targets.
+- Removed old Cursor-only JavaScript rewrites instead of requiring Cursor's minified code in other editors.
+- Upgrade outdated patches and verify every target before showing RTL as active. Keep partial errors and reload prompts visible.
+- Preserve the current application files when upgrading patches, even if an older backup exists.
+- Run the patcher in the local UI extension host for remote workspaces.
+
+## [1.0.13] - 2026-09-27
+### Fixed
+- Detect an existing RTL patch on the running Cursor install and skip re-patching on startup (no permission spam).
+- Show a single “run as Administrator once” message when patching is still needed.
+
+## [1.0.12] - 2026-09-27
+### Changed
+- Marketplace-ready package: `license` in manifest, 128×128 icon, VSIX built with `vsce`.
+
 ## [1.0.11] - 2026-09-27
 ### Changed
 - Rebrand to **RTL Everywhere** (display name, icon, publisher `jopro`).

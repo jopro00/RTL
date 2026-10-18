@@ -1,46 +1,19 @@
-html,
-body,
-.markdown-body,
-.markdown-body[dir="auto"],
-.markdown-body[dir="ltr"] {
-	direction: rtl !important;
-	text-align: right !important;
-	unicode-bidi: isolate !important;
+html, body, .markdown-body {
+  direction: rtl !important;
+  text-align: start !important;
+  unicode-bidi: plaintext !important;
 }
-.markdown-body h1,
-.markdown-body h2,
-.markdown-body h3,
-.markdown-body h4,
-.markdown-body h5,
-.markdown-body h6,
-.markdown-body p,
-.markdown-body li,
-.markdown-body th,
-.markdown-body td {
-	direction: rtl !important;
-	text-align: right !important;
-	unicode-bidi: isolate !important;
+h1, h2, h3, h4, h5, h6, p, li, dt, dd, figcaption, th, td, blockquote {
+  direction: rtl !important;
+  text-align: start !important;
+  unicode-bidi: plaintext !important;
 }
-.markdown-body table {
-	direction: rtl !important;
-	width: 100%;
+ul, ol {
+  padding-inline-start: 2em !important;
+  padding-inline-end: 0 !important;
 }
-.markdown-body ul,
-.markdown-body ol {
-	padding-right: 2em !important;
-	padding-left: 0 !important;
-}
-.markdown-body blockquote {
-	border-left: none !important;
-	border-right-width: 5px !important;
-	border-right-style: solid !important;
-	padding-right: 16px !important;
-	padding-left: 0 !important;
-}
-.markdown-body pre,
-.markdown-body pre code,
-.markdown-body .hljs {
-	direction: ltr !important;
-	text-align: left !important;
-	unicode-bidi: isolate !important;
+pre, pre *, code, kbd, .hljs, .hljs * {
+  direction: ltr !important;
+  text-align: left !important;
+  unicode-bidi: isolate !important;
 }

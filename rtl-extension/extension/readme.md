@@ -1,7 +1,8 @@
 
 ## Features
 
-- **Auto RTL:** Arabic chat and rendered Markdown use RTL layout.
+- **Auto RTL:** Arabic paragraphs read RTL; English paragraphs read LTR without reversing letters.
+- **Editors:** Cursor, Antigravity IDE, and VS Code Markdown preview. Antigravity chat input and messages are supported.
 - **Markdown Preview:** Arabic `.md` files flow RTL in the **Preview** tab only (not the raw Markdown source view). Fenced code stays LTR.
 - **Code isolation:** Code blocks stay **LTR** so syntax highlighting does not break.
 - **Lists:** RTL margins for UL/OL.
@@ -12,9 +13,11 @@
 ## How to run
 
 1. Install the VSIX → **Enable RTL**
-2. Quit Cursor completely
-3. **First time only:** start Cursor as **Administrator** and enable RTL
-4. After that, run Cursor normally
+2. Reload the editor when prompted so the new styles are loaded.
+3. If enabling reports a permission error, quit the editor, start it as **Administrator**, and enable RTL again.
+4. After that, run the editor normally. Updates reapply the patch when needed.
+
+Existing patches are upgraded automatically when **Auto Enable** is on. If it is off, run **RTL Patcher: Enable RTL for Arabic Chat** after installing the update.
 
 Full steps: [README on GitHub](https://github.com/jopro00/RTL#how-to-run-windows)
 

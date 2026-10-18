@@ -6,7 +6,7 @@ const cp = require('child_process');
 const crypto = require('crypto');
 
 const BACKUP_EXT = '.rtlbak';
-const PATCH_VERSION = '1.0.6';
+const PATCH_VERSION = '1.0.14';
 const STYLE_ID = 'rtl-patcher-style';
 const CSS_MARKER_START = `/* RTL-PATCH-START v${PATCH_VERSION} */`;
 const CSS_MARKER_END = '/* RTL-PATCH-END */';
@@ -16,272 +16,8 @@ const ANY_CSS_START = /\/\* RTL-PATCH-START(?: v[\d.]+)? \*\//;
 const ANY_HTML_START = /<!-- RTL-PATCH-START(?: v[\d.]+)? -->/;
 const LEGACY_INJECT_SCRIPT = 'rtl-inject.js';
 
-const RTL_CSS = `
-@layer rtl-patch;
-@layer rtl-patch {
-html body .markdown-root,
-html body .markdown-root.markdown-normalized,
-html body .anysphere-markdown-container-root,
-html body .markdown-section,
-html body .composer-human-message,
-html body .composer-ai-message,
-html body .ui-prompt-input,
-html body .ui-prompt-input .ProseMirror,
-html body .ui-prompt-input-editor,
-html body .ui-prompt-input-tiptap-readonly,
-html body .aislash-editor-input,
-html body .aislash-editor-input-readonly {
-	direction: rtl !important;
-	text-align: right !important;
-	unicode-bidi: plaintext !important;
-}
-html body .markdown-root ul,
-html body .markdown-root ol,
-html body .anysphere-markdown-container-root ul,
-html body .anysphere-markdown-container-root ol,
-html body .markdown-section ul,
-html body .markdown-section ol {
-	padding-right: 20px !important;
-	padding-left: 0 !important;
-	direction: rtl !important;
-}
-html body .markdown-root pre,
-html body .markdown-root code,
-html body .anysphere-markdown-container-root pre,
-html body .anysphere-markdown-container-root code,
-html body .markdown-section pre,
-html body .markdown-section code,
-html body [data-streamdown="code-block"],
-html body [data-streamdown="code-block-body"],
-html body .markdown-code-outer-container,
-html body .ui-code-block,
-html body .markdown-code-outer-container .monaco-editor,
-html body .markdown-code-outer-container .monaco-editor *,
-html body .ui-code-block .monaco-editor,
-html body .ui-code-block .monaco-editor *,
-html body [data-streamdown="code-block"] .monaco-editor,
-html body [data-streamdown="code-block"] .monaco-editor * {
-	direction: ltr !important;
-	text-align: left !important;
-	unicode-bidi: isolate !important;
-}
-html body .ui-model-picker__trigger,
-html body .ui-model-picker__trigger *,
-html body .ui-dropdown-menu,
-html body .ui-dropdown-menu *,
-html body .monaco-menu,
-html body .monaco-menu * {
-	direction: ltr !important;
-	text-align: left !important;
-}
-html body .monaco-workbench .part.auxiliarybar ul,
-html body .monaco-workbench .part.auxiliarybar ol {
-	padding-inline-start: 20px !important;
-	padding-inline-end: 0 !important;
-}
-html body .monaco-editor[data-mode-id="markdown"] {
-	direction: rtl !important;
-}
-html body .monaco-editor[data-mode-id="markdown"] .view-lines,
-html body .monaco-editor[data-mode-id="markdown"] .lines-content,
-html body .monaco-editor[data-mode-id="markdown"] .view-line,
-html body .monaco-editor[data-mode-id="markdown"] .view-line span {
-	direction: rtl !important;
-	text-align: right !important;
-	unicode-bidi: isolate !important;
-}
-.markdown-editor-react,
-.markdown-editor-react[dir],
-.markdown-editor-react__content,
-.markdown-editor-react__scroll-area-wrapper,
-.markdown-editor-react__scroll-area,
-.markdown-editor-react__richtext,
-.markdown-editor-react__richtext-content,
-.markdown-editor-react .ProseMirror,
-.markdown-editor-react [dir="auto"],
-.markdown-editor-react [dir="ltr"],
-html body .markdown-editor-react,
-html body .markdown-editor-react__content,
-html body .markdown-editor-react__scroll-area,
-html body .markdown-editor-react__richtext,
-html body .markdown-editor-react__richtext-content,
-html body .markdown-editor-react__richtext-content .ProseMirror,
-html body .markdown-editor-react [dir="auto"],
-html body .markdown-editor-react [dir="ltr"],
-html body .markdown-editor,
-html body .markdown-editor .ProseMirror,
-html body .markdown-preview-editor,
-html body .markdown-preview-editor .markdown-body {
-	direction: rtl !important;
-	text-align: right !important;
-	unicode-bidi: isolate !important;
-}
-.markdown-editor-react h1,
-.markdown-editor-react h2,
-.markdown-editor-react h3,
-.markdown-editor-react h4,
-.markdown-editor-react h5,
-.markdown-editor-react h6,
-.markdown-editor-react p,
-.markdown-editor-react li,
-.markdown-editor-react th,
-.markdown-editor-react td,
-.markdown-editor-react blockquote,
-.markdown-editor-react .ProseMirror > *:not(pre),
-html body .markdown-editor-react__richtext-content .ProseMirror > *:not(pre),
-html body .markdown-editor-react__richtext-content .ProseMirror h1,
-html body .markdown-editor-react__richtext-content .ProseMirror h2,
-html body .markdown-editor-react__richtext-content .ProseMirror h3,
-html body .markdown-editor-react__richtext-content .ProseMirror h4,
-html body .markdown-editor-react__richtext-content .ProseMirror h5,
-html body .markdown-editor-react__richtext-content .ProseMirror h6,
-html body .markdown-editor-react__richtext-content .ProseMirror p,
-html body .markdown-editor-react__richtext-content .ProseMirror li,
-html body .markdown-editor-react__richtext-content .ProseMirror th,
-html body .markdown-editor-react__richtext-content .ProseMirror td,
-html body .markdown-editor-react__richtext-content .ProseMirror blockquote {
-	direction: rtl !important;
-	text-align: right !important;
-	unicode-bidi: isolate-override !important;
-}
-html body .markdown-editor-react__richtext-content .ProseMirror ul,
-html body .markdown-editor-react__richtext-content .ProseMirror ol,
-html body .markdown-preview-editor .markdown-body ul,
-html body .markdown-preview-editor .markdown-body ol,
-html body .markdown-editor .ProseMirror ul,
-html body .markdown-editor .ProseMirror ol {
-	padding-right: 2em !important;
-	padding-left: 0 !important;
-	direction: rtl !important;
-}
-html body .markdown-editor-react__richtext-content .ProseMirror table,
-html body .markdown-editor-react__richtext-content .ProseMirror .tableWrapper,
-html body .markdown-preview-editor .markdown-body table,
-html body .markdown-editor .ProseMirror table {
-	direction: rtl !important;
-	width: 100% !important;
-}
-html body .markdown-editor-react__richtext-content .ProseMirror th,
-html body .markdown-editor-react__richtext-content .ProseMirror td,
-html body .markdown-preview-editor .markdown-body th,
-html body .markdown-preview-editor .markdown-body td,
-html body .markdown-editor .ProseMirror th,
-html body .markdown-editor .ProseMirror td {
-	text-align: right !important;
-	direction: rtl !important;
-}
-html body .markdown-editor-react__richtext-content .ProseMirror blockquote,
-html body .markdown-preview-editor .markdown-body blockquote,
-html body .markdown-editor .ProseMirror blockquote {
-	border-left: none !important;
-	border-right-width: 5px !important;
-	border-right-style: solid !important;
-	padding-right: 16px !important;
-	padding-left: 0 !important;
-}
-html body .markdown-editor-react__richtext-content .ProseMirror pre,
-html body .markdown-editor-react__richtext-content .ProseMirror pre *,
-html body .markdown-editor-react__richtext-content .ProseMirror code,
-html body .markdown-preview-editor .markdown-body pre,
-html body .markdown-preview-editor .markdown-body pre code,
-html body .markdown-preview-editor .markdown-body .vscode-code-block,
-html body .markdown-preview-editor .markdown-body .hljs,
-html body .markdown-editor pre,
-html body .markdown-editor pre code,
-html body .markdown-editor code {
-	direction: ltr !important;
-	text-align: left !important;
-	unicode-bidi: isolate !important;
-}
-}
-`.trim();
-
-/** Loaded inside the Markdown preview iframe (separate document from workbench). */
-const MARKDOWN_PREVIEW_RTL_CSS = `
-html {
-	direction: rtl;
-}
-html[dir="ltr"],
-html[dir="auto"] {
-	direction: rtl !important;
-}
-body {
-	direction: rtl !important;
-	text-align: right !important;
-	unicode-bidi: isolate !important;
-}
-.markdown-body,
-.markdown-body[dir="auto"],
-.markdown-body[dir="ltr"] {
-	direction: rtl !important;
-	text-align: right !important;
-	unicode-bidi: isolate !important;
-}
-.markdown-body h1,
-.markdown-body h2,
-.markdown-body h3,
-.markdown-body h4,
-.markdown-body h5,
-.markdown-body h6,
-.markdown-body p,
-.markdown-body li,
-.markdown-body dt,
-.markdown-body dd,
-.markdown-body figcaption,
-.markdown-body th,
-.markdown-body td,
-h1, h2, h3, h4, h5, h6,
-p, li, dt, dd, figcaption,
-th, td {
-	text-align: right !important;
-	direction: rtl !important;
-	unicode-bidi: isolate !important;
-}
-.markdown-body table,
-table {
-	direction: rtl !important;
-	width: 100%;
-}
-.markdown-body th,
-th {
-	text-align: right !important;
-}
-.markdown-body ul,
-.markdown-body ol,
-ul, ol {
-	padding-right: 2em !important;
-	padding-left: 0 !important;
-}
-.markdown-body blockquote,
-blockquote {
-	border-left: none !important;
-	border-right-width: 5px !important;
-	border-right-style: solid !important;
-	padding-right: 16px !important;
-	padding-left: 0 !important;
-}
-.markdown-body pre,
-.markdown-body pre code,
-.markdown-body .hljs,
-pre, pre code, pre.hljs, .hljs, kbd {
-	direction: ltr !important;
-	text-align: left !important;
-	unicode-bidi: isolate !important;
-}
-:not(pre) > code {
-	unicode-bidi: isolate !important;
-}
-body.showEditorSelection :not(tr,ul,ol).code-active-line:before,
-body.showEditorSelection :not(tr,ul,ol).code-line:hover:before {
-	left: auto !important;
-	right: -12px !important;
-}
-body.showEditorSelection li.code-active-line:before,
-body.showEditorSelection li.code-line:hover:before {
-	left: auto !important;
-	right: -30px !important;
-}
-`.trim();
+const RTL_CSS = fs.readFileSync(path.join(__dirname, 'rtl.css'), 'utf8').trim();
+const MARKDOWN_PREVIEW_RTL_CSS = fs.readFileSync(path.join(__dirname, 'preview-rtl.css'), 'utf8').trim();
 
 const MARKDOWN_EXT_DIR_AUTO = 'class="markdown-body" dir="auto"';
 const MARKDOWN_EXT_DIR_RTL = 'class="markdown-body" dir="rtl"';
@@ -375,7 +111,8 @@ function getHtmlTargets() {
 	for (const appRoot of getAppRoots()) {
 		const htmlCandidates = [
 			path.join(appRoot, 'out', 'vs', 'code', 'electron-sandbox', 'workbench', 'workbench.html'),
-			path.join(appRoot, 'out', 'vs', 'code', 'electron-browser', 'workbench', 'workbench.html')
+			path.join(appRoot, 'out', 'vs', 'code', 'electron-browser', 'workbench', 'workbench.html'),
+			path.join(appRoot, 'extensions', 'antigravity', 'cascade-panel.html')
 		];
 		for (const htmlPath of htmlCandidates) {
 			if (!seen.has(htmlPath) && fs.existsSync(htmlPath)) {
@@ -443,20 +180,53 @@ function getJsTargets() {
 	return targets;
 }
 
+function isUnderRunningAppRoot(filePath) {
+	const appRoot = vscode.env.appRoot;
+	if (!appRoot) {
+		return true;
+	}
+	const rel = path.relative(path.resolve(appRoot), path.resolve(filePath));
+	return rel === '' || (!rel.startsWith('..') && !path.isAbsolute(rel));
+}
+
+function targetsForRunningApp(getter) {
+	return getter().filter(isUnderRunningAppRoot);
+}
+
+function isPatchAppliedOnRunningInstall() {
+	const cssTargets = targetsForRunningApp(getCssTargets);
+	const htmlTargets = targetsForRunningApp(getHtmlTargets);
+	const jsTargets = targetsForRunningApp(getJsTargets);
+	if (cssTargets.length === 0 || htmlTargets.length === 0) {
+		return false;
+	}
+	const markdownCssTargets = targetsForRunningApp(getMarkdownCssTargets);
+	const markdownExtTargets = targetsForRunningApp(getMarkdownExtensionTargets);
+	return (
+		cssTargets.every(isCssPatchApplied) &&
+		htmlTargets.every(isHtmlPatchApplied) &&
+		jsTargets.every(isJsPatchApplied) &&
+		markdownCssTargets.every(isCssPatchApplied) &&
+		markdownExtTargets.every(isMarkdownExtensionPatchApplied)
+	);
+}
+
+/** All required files must have the current patch, including legacy cleanup. */
+function isPatchAlreadyActive() {
+	return isPatchAppliedOnRunningInstall();
+}
+
 function isMarkdownExtensionPatchApplied(filePath) {
 	try {
-		const content = fs.readFileSync(filePath, 'utf8');
-		return content.includes(MARKDOWN_EXT_DIR_RTL) && !content.includes(MARKDOWN_EXT_DIR_AUTO);
+		return !fs.readFileSync(filePath, 'utf8').includes(MARKDOWN_EXT_DIR_RTL);
 	} catch (e) {
 		return false;
 	}
 }
 
 function patchMarkdownExtension(filePath) {
-	let content = readOriginal(filePath);
-	if (content.includes(MARKDOWN_EXT_DIR_AUTO)) {
-		content = content.split(MARKDOWN_EXT_DIR_AUTO).join(MARKDOWN_EXT_DIR_RTL);
-	}
+	backupFile(filePath);
+	const content = fs.readFileSync(filePath, 'utf8').split(MARKDOWN_EXT_DIR_RTL).join(MARKDOWN_EXT_DIR_AUTO);
 	writePatched(filePath, content);
 }
 
@@ -481,8 +251,9 @@ function backupFile(filePath) {
 	return backupPath;
 }
 
-function readOriginal(filePath) {
-	return fs.readFileSync(backupFile(filePath), 'utf8');
+function readForPatch(filePath) {
+	backupFile(filePath);
+	return fs.readFileSync(filePath, 'utf8');
 }
 
 function getOutDir(filePath) {
@@ -551,7 +322,8 @@ function cleanupLegacyHtmlPatch(htmlPath) {
 	if (!hadLegacy) {
 		return false;
 	}
-	content = readOriginal(htmlPath);
+	backupFile(htmlPath);
+	content = content.replace(/<script\b[^>]*\bsrc=["'][^"']*rtl-inject\.js[^"']*["'][^>]*>\s*<\/script>/gi, '');
 	writePatched(htmlPath, content);
 	const injectPath = path.join(path.dirname(htmlPath), LEGACY_INJECT_SCRIPT);
 	if (fs.existsSync(injectPath)) {
@@ -561,13 +333,13 @@ function cleanupLegacyHtmlPatch(htmlPath) {
 }
 
 function patchCss(filePath) {
-	let content = readOriginal(filePath);
+	let content = readForPatch(filePath);
 	content = stripMarkedBlock(content, ANY_CSS_START, CSS_MARKER_END).replace(/\s+$/, '') + CSS_BLOCK;
 	writePatched(filePath, content);
 }
 
 function patchMarkdownCss(filePath) {
-	let content = readOriginal(filePath);
+	let content = readForPatch(filePath);
 	content =
 		stripMarkedBlock(content, ANY_CSS_START, CSS_MARKER_END).replace(/\s+$/, '') + MARKDOWN_CSS_BLOCK;
 	writePatched(filePath, content);
@@ -575,7 +347,7 @@ function patchMarkdownCss(filePath) {
 
 function patchHtml(filePath) {
 	cleanupLegacyHtmlPatch(filePath);
-	let content = readOriginal(filePath);
+	let content = readForPatch(filePath);
 	content = stripMarkedBlock(content, ANY_HTML_START, HTML_MARKER_END);
 	if (content.includes('</body>')) {
 		content = content.replace('</body>', `${HTML_STYLE_BLOCK}\n\t</body>`);
@@ -590,22 +362,17 @@ function patchHtml(filePath) {
 function isJsPatchApplied(filePath) {
 	try {
 		const content = fs.readFileSync(filePath, 'utf8');
-		return JS_REPLACEMENTS.every((rep) => content.includes(rep.to));
+		return JS_REPLACEMENTS.every((rep) => !content.includes(rep.to));
 	} catch (e) {
 		return false;
 	}
 }
 
+/** Remove our old Cursor-only rewrites; no JS markers are required now. */
 function patchJs(filePath) {
-	let content = readOriginal(filePath);
+	let content = readForPatch(filePath);
 	for (const rep of JS_REPLACEMENTS) {
-		if (content.includes(rep.to)) {
-			continue;
-		}
-		if (!content.includes(rep.from)) {
-			throw new Error(`JS marker not found: ${rep.from.slice(0, 80)}`);
-		}
-		content = content.split(rep.from).join(rep.to);
+		content = content.split(rep.to).join(rep.from);
 	}
 	writePatched(filePath, content);
 }
@@ -634,7 +401,7 @@ function withWriteRetry(filePath, action) {
 		action();
 		return { ok: true };
 	} catch (err) {
-		if (err.code === 'EACCES' || /EACCES|operation not permitted/i.test(err.message || '')) {
+		if (['EACCES', 'EPERM'].includes(err.code) || /EACCES|operation not permitted/i.test(err.message || '')) {
 			try {
 				if (process.platform === 'darwin') {
 					cp.execSync(`xattr -c "${filePath}"`, { stdio: 'ignore' });
@@ -648,24 +415,6 @@ function withWriteRetry(filePath, action) {
 		}
 		return { ok: false, permission: false, error: err };
 	}
-}
-
-function isPatchFullyApplied() {
-	const cssTargets = getCssTargets();
-	const htmlTargets = getHtmlTargets();
-	const jsTargets = getJsTargets();
-	if (cssTargets.length === 0 || htmlTargets.length === 0 || jsTargets.length === 0) {
-		return false;
-	}
-	const markdownCssTargets = getMarkdownCssTargets();
-	const markdownExtTargets = getMarkdownExtensionTargets();
-	return (
-		cssTargets.every(isCssPatchApplied) &&
-		htmlTargets.every(isHtmlPatchApplied) &&
-		jsTargets.every(isJsPatchApplied) &&
-		markdownCssTargets.every(isCssPatchApplied) &&
-		markdownExtTargets.every(isMarkdownExtensionPatchApplied)
-	);
 }
 
 function updateStatusBar(isActive) {
@@ -712,82 +461,105 @@ async function showMenu() {
 }
 
 function applyPatch() {
-	for (const htmlPath of getHtmlTargets()) {
-		withWriteRetry(htmlPath, () => cleanupLegacyHtmlPatch(htmlPath));
-	}
-
-	const cssTargets = getCssTargets();
-	const htmlTargets = getHtmlTargets();
-	const jsTargets = getJsTargets();
-	const markdownCssTargets = getMarkdownCssTargets();
-	const markdownExtTargets = getMarkdownExtensionTargets();
-	if (cssTargets.length === 0 || htmlTargets.length === 0) {
-		vscode.window.showErrorMessage('No Cursor/VS Code workbench files found to patch.');
+	if (isPatchAlreadyActive()) {
+		updateStatusBar(true);
 		return;
 	}
 
-	let patchedCount = 0;
+	const cssTargets = targetsForRunningApp(getCssTargets);
+	const htmlTargets = targetsForRunningApp(getHtmlTargets);
+	const jsTargets = targetsForRunningApp(getJsTargets);
+	const markdownCssTargets = targetsForRunningApp(getMarkdownCssTargets);
+	const markdownExtTargets = targetsForRunningApp(getMarkdownExtensionTargets);
+	if (cssTargets.length === 0 || htmlTargets.length === 0) {
+		vscode.window.showErrorMessage(`No workbench files found for ${vscode.env.appName}.`);
+		return;
+	}
+
+	for (const htmlPath of htmlTargets) {
+		if (!isHtmlPatchApplied(htmlPath)) {
+			withWriteRetry(htmlPath, () => cleanupLegacyHtmlPatch(htmlPath));
+		}
+	}
+
+	let newlyPatched = 0;
 	const errors = [];
 
 	for (const filePath of cssTargets) {
+		if (isCssPatchApplied(filePath)) {
+			continue;
+		}
 		const result = withWriteRetry(filePath, () => patchCss(filePath));
 		if (result.ok) {
-			patchedCount += 1;
+			newlyPatched += 1;
 		} else if (result.permission) {
-			errors.push(`Permission denied: ${filePath}`);
+			errors.push({ permission: true, detail: filePath });
 		} else {
-			errors.push(`${path.basename(filePath)}: ${result.error.message}`);
+			errors.push({ permission: false, detail: `${path.basename(filePath)}: ${result.error.message}` });
 		}
 	}
 
 	for (const filePath of markdownCssTargets) {
+		if (isCssPatchApplied(filePath)) {
+			continue;
+		}
 		const result = withWriteRetry(filePath, () => patchMarkdownCss(filePath));
 		if (result.ok) {
-			patchedCount += 1;
+			newlyPatched += 1;
 		} else if (result.permission) {
-			errors.push(`Permission denied: ${filePath}`);
+			errors.push({ permission: true, detail: filePath });
 		} else {
-			errors.push(`${path.basename(filePath)}: ${result.error.message}`);
+			errors.push({ permission: false, detail: `${path.basename(filePath)}: ${result.error.message}` });
 		}
 	}
 
 	for (const filePath of markdownExtTargets) {
+		if (isMarkdownExtensionPatchApplied(filePath)) {
+			continue;
+		}
 		const result = withWriteRetry(filePath, () => patchMarkdownExtension(filePath));
 		if (result.ok) {
-			patchedCount += 1;
+			newlyPatched += 1;
 		} else if (result.permission) {
-			errors.push(`Permission denied: ${filePath}`);
+			errors.push({ permission: true, detail: filePath });
 		} else {
-			errors.push(`${path.basename(filePath)}: ${result.error.message}`);
+			errors.push({ permission: false, detail: `${path.basename(filePath)}: ${result.error.message}` });
 		}
 	}
 
 	for (const filePath of jsTargets) {
+		if (isJsPatchApplied(filePath)) {
+			continue;
+		}
 		const result = withWriteRetry(filePath, () => patchJs(filePath));
 		if (result.ok) {
-			patchedCount += 1;
+			newlyPatched += 1;
 		} else if (result.permission) {
-			errors.push(`Permission denied: ${filePath}`);
+			errors.push({ permission: true, detail: filePath });
 		} else {
-			errors.push(`${path.basename(filePath)}: ${result.error.message}`);
+			errors.push({ permission: false, detail: `${path.basename(filePath)}: ${result.error.message}` });
 		}
 	}
 
 	for (const htmlPath of htmlTargets) {
+		if (isHtmlPatchApplied(htmlPath)) {
+			continue;
+		}
 		const result = withWriteRetry(htmlPath, () => patchHtml(htmlPath));
 		if (result.ok) {
-			patchedCount += 1;
+			newlyPatched += 1;
 		} else if (result.permission) {
-			errors.push(`Permission denied: ${htmlPath}`);
+			errors.push({ permission: true, detail: htmlPath });
 		} else {
-			errors.push(`${path.basename(htmlPath)}: ${result.error.message}`);
+			errors.push({ permission: false, detail: `${path.basename(htmlPath)}: ${result.error.message}` });
 		}
 	}
 
-	if (patchedCount > 0) {
-		updateStatusBar(true);
+	updateStatusBar(errors.length === 0 && isPatchAlreadyActive());
+
+	if (newlyPatched > 0) {
 		vscode.window.showInformationMessage(
-			`RTL patch applied to ${patchedCount} file(s). Please reload Cursor.`,
+			`RTL patch applied to ${newlyPatched} file(s). Reload ${vscode.env.appName} to use the new styles.`,
 			'Restart Now'
 		).then((sel) => {
 			if (sel === 'Restart Now') {
@@ -797,14 +569,21 @@ function applyPatch() {
 	}
 
 	if (errors.length > 0) {
-		vscode.window.showWarningMessage('Some files failed to patch:\n' + errors.join('\n\n'), { modal: true });
+		for (const err of errors) {
+			console.error('RTL patch failed:', err.detail);
+		}
+		const details = errors.map((err) => err.detail).join('\n');
+		const hint = errors.some((err) => err.permission)
+			? ` Close ${vscode.env.appName}, run it as Administrator, and enable RTL again.`
+			: '';
+		vscode.window.showWarningMessage(`RTL patch incomplete.${hint}\n${details}`);
 	}
 }
 
 function restoreBackup() {
 	let restoredAny = false;
 
-	for (const htmlPath of getHtmlTargets()) {
+	for (const htmlPath of targetsForRunningApp(getHtmlTargets)) {
 		const result = withWriteRetry(htmlPath, () => {
 			if (restoreHtml(htmlPath)) {
 				restoredAny = true;
@@ -815,7 +594,7 @@ function restoreBackup() {
 		}
 	}
 
-	for (const filePath of getCssTargets()) {
+	for (const filePath of targetsForRunningApp(getCssTargets)) {
 		const result = withWriteRetry(filePath, () => {
 			if (restoreCss(filePath)) {
 				restoredAny = true;
@@ -826,7 +605,7 @@ function restoreBackup() {
 		}
 	}
 
-	for (const filePath of getMarkdownCssTargets()) {
+	for (const filePath of targetsForRunningApp(getMarkdownCssTargets)) {
 		const result = withWriteRetry(filePath, () => {
 			if (restoreCss(filePath)) {
 				restoredAny = true;
@@ -837,7 +616,7 @@ function restoreBackup() {
 		}
 	}
 
-	for (const filePath of getMarkdownExtensionTargets()) {
+	for (const filePath of targetsForRunningApp(getMarkdownExtensionTargets)) {
 		const result = withWriteRetry(filePath, () => {
 			if (restoreCss(filePath)) {
 				restoredAny = true;
@@ -848,7 +627,7 @@ function restoreBackup() {
 		}
 	}
 
-	for (const filePath of getJsTargets()) {
+	for (const filePath of targetsForRunningApp(getJsTargets)) {
 		const result = withWriteRetry(filePath, () => {
 			if (restoreCss(filePath)) {
 				restoredAny = true;
@@ -873,7 +652,7 @@ function restoreBackup() {
 }
 
 function toggleRtl() {
-	if (isPatchFullyApplied()) {
+	if (isPatchAlreadyActive()) {
 		restoreBackup();
 	} else {
 		applyPatch();
@@ -881,12 +660,13 @@ function toggleRtl() {
 }
 
 function checkStatus() {
-	const current = isPatchFullyApplied();
-	updateStatusBar(current);
+	const active = isPatchAlreadyActive();
+	updateStatusBar(active);
 	const autoEnable = vscode.workspace.getConfiguration().get('antigravity.autoEnable', true);
-	if (!current && autoEnable) {
-		applyPatch();
+	if (active || !autoEnable) {
+		return;
 	}
+	applyPatch();
 }
 
 function activate(context) {

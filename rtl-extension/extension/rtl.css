@@ -1,0 +1,58 @@
+/* Content only: do not change workbench controls or Monaco's source layout. */
+@layer rtl-patch {
+html body :is(
+  .markdown-root, .anysphere-markdown-container-root, .markdown-section,
+  .composer-human-message, .composer-ai-message,
+  .ui-prompt-input, .ui-prompt-input .ProseMirror,
+  .ui-prompt-input-editor, .ui-prompt-input-tiptap-readonly,
+  .aislash-editor-input, .aislash-editor-input-readonly,
+  .markdown-editor-react, .markdown-editor-react .ProseMirror,
+  .markdown-editor .ProseMirror, .markdown-preview-editor .markdown-body,
+  .md-divider-spacing, .chat-markdown-part.rendered-markdown,
+  [data-testid="user-input-step"] .whitespace-pre-wrap,
+  [data-lexical-editor="true"]
+) {
+  direction: rtl !important;
+  text-align: start !important;
+  unicode-bidi: plaintext !important;
+}
+
+/* Resolve each paragraph independently, including English inside Arabic chat. */
+html body :is(
+  .markdown-root, .anysphere-markdown-container-root, .markdown-section,
+  .markdown-editor-react .ProseMirror, .markdown-editor .ProseMirror,
+  .markdown-preview-editor .markdown-body, .md-divider-spacing,
+  .chat-markdown-part.rendered-markdown, [data-lexical-editor="true"]
+) :is(h1, h2, h3, h4, h5, h6, p, li, th, td, dt, dd, blockquote) {
+  direction: rtl !important;
+  text-align: start !important;
+  unicode-bidi: plaintext !important;
+}
+
+html body :is(
+  .markdown-root, .anysphere-markdown-container-root, .markdown-section,
+  .markdown-editor-react .ProseMirror, .markdown-editor .ProseMirror,
+  .markdown-preview-editor .markdown-body, .md-divider-spacing,
+  .chat-markdown-part.rendered-markdown
+) :is(ul, ol) {
+  padding-inline-start: 2em !important;
+  padding-inline-end: 0 !important;
+}
+
+/* Keep tokens, syntax-highlighted code, diagrams and their controls LTR. */
+html body :is(
+  .markdown-root, .anysphere-markdown-container-root, .markdown-section,
+  .markdown-editor-react .ProseMirror, .markdown-editor .ProseMirror,
+  .markdown-preview-editor .markdown-body, .md-divider-spacing,
+  .chat-markdown-part.rendered-markdown
+) :is(pre, pre *, code, kbd, .monaco-editor, .monaco-editor *,
+       .monaco-tokenized-source, .monaco-tokenized-source *, .mermaid, .mermaid *,
+       .katex, .katex *, .relative.whitespace-pre-wrap, .relative.whitespace-pre-wrap *),
+html body :is([data-streamdown="code-block"], [data-streamdown="code-block-body"],
+             .markdown-code-outer-container, .ui-code-block),
+html body :is(.markdown-code-outer-container, .ui-code-block) .monaco-editor * {
+  direction: ltr !important;
+  text-align: left !important;
+  unicode-bidi: isolate !important;
+}
+}
