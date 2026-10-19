@@ -42,6 +42,31 @@ cd D:\code\RTL
 
 Output: `dist\rtl-<version>.vsix`
 
+## Automatic publishing to Open VSX
+
+`.github/workflows/publish-open-vsx.yml` checks the version in
+`rtl-extension/extension/package.json` on every push to `main`. If that version
+is not on Open VSX yet, it runs the patcher regression tests, packages the
+extension, and publishes it using [Open VSX trusted publishing](https://github.com/eclipse-openvsx/openvsx/blob/main/cli/README.md#trusted-publishing).
+An already published version is skipped. Registry errors fail the workflow.
+
+One-time setup:
+
+1. Push the workflow file to `jopro00/RTL` on GitHub.
+2. In the Open VSX extension settings, register a trusted publisher with:
+   - Publisher: **GitHub**
+   - Organization or User name: **jopro00**
+   - Repository name: **RTL**
+   - Workflow filename: **publish-open-vsx.yml**
+   - Environment name: leave empty (the workflow does not use an environment).
+3. Click **Register**. This workflow requires no `OVSX_PAT` repository secret.
+
+For each update, increase `version` in `rtl-extension/extension/package.json`,
+update the changelog, and push to `main`. Keep
+`rtl-extension/extension.vsixmanifest` in sync if you also use it for packaging.
+To retry a failed publish, open **Actions → Publish to Open VSX → Run workflow**
+on `main`. The workflow never changes or commits the extension version for you.
+
 ## Commands
 
 | Command | Description |

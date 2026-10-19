@@ -1,0 +1,74 @@
+name: Publish to Open VSX
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-open-vsx
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+
+      - name: Check whether this version is already published
+        id: version
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const { publisher, name, version } = require('./rtl-extension/extension/package.json');
+          async function check() {
+            const url = `https://open-vsx.org/api/${encodeURIComponent(publisher)}/${encodeURIComponent(name)}/${encodeURIComponent(version)}`;
+            const response = await fetch(url, { signal: AbortSignal.timeout(30000) });
+            let published = false;
+            if (response.ok) {
+              const metadata = await response.json();
+              if (metadata.version !== version || metadata.name !== name || metadata.namespace !== publisher) {
+                throw new Error('Open VSX returned unexpected extension metadata.');
+              }
+              published = true;
+            } else if (response.status !== 404) {
+              throw new Error(`Open VSX version check failed: HTTP ${response.status}`);
+            }
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, `published=${published}\n`);
+            const message = published
+              ? `${publisher}.${name} ${version} is already published. Increase package.json version to publish an update.`
+              : `Publishing ${publisher}.${name} ${version} to Open VSX.`;
+            console.log(message);
+            fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, `${message}\n`);
+          }
+          check().catch(error => { console.error(error); process.exitCode = 1; });
+          NODE
+
+      - name: Run patcher regression tests
+        if: steps.version.outputs.published == 'false'
+        run: node --test tests/patcher.test.cjs
+
+      - name: Package extension
+        if: steps.version.outputs.published == 'false'
+        working-directory: rtl-extension/extension
+        run: npx --yes @vscode/vsce@4.0.0 package --no-dependencies --out "$RUNNER_TEMP/rtl-everywhere.vsix"
+
+      - name: Publish with Open VSX trusted publishing
+        if: steps.version.outputs.published == 'false'
+        working-directory: rtl-extension/extension
+        run: npx --yes ovsx@1.3.0 publish "$RUNNER_TEMP/rtl-everywhere.vsix" --trusted-publishing
