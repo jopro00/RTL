@@ -2,6 +2,10 @@
 
 All notable changes to the "antigravity-rtl-patcher" extension will be documented in this file.
 
+## [1.0.16] - 2026-10-27
+### Fixed
+- Target Jetski Agent's current user-message bubble and contenteditable composer so Arabic prompts render and enter right-to-left.
+
 ## [1.0.15] - 2026-10-27
 ### Fixed
 - Target Antigravity's updated workbench structure: added `Antigravity IDE` installation path detection and `workbench-jetski-agent.html` for the AI conversation panel.

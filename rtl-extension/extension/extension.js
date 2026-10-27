@@ -6,7 +6,7 @@ const cp = require('child_process');
 const crypto = require('crypto');
 
 const BACKUP_EXT = '.rtlbak';
-const PATCH_VERSION = '1.0.15';
+const PATCH_VERSION = '1.0.16';
 const STYLE_ID = 'rtl-patcher-style';
 const CSS_MARKER_START = `/* RTL-PATCH-START v${PATCH_VERSION} */`;
 const CSS_MARKER_END = '/* RTL-PATCH-END */';
