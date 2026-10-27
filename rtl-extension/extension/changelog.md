@@ -2,6 +2,12 @@
 
 All notable changes to the "antigravity-rtl-patcher" extension will be documented in this file.
 
+## [1.0.15] - 2026-10-27
+### Fixed
+- Target Antigravity's updated workbench structure: added `Antigravity IDE` installation path detection and `workbench-jetski-agent.html` for the AI conversation panel.
+- Enhanced backup lifecycle: always captures a clean copy of the current workbench before patching, and automatically removes `.rtlbak` files upon restore to prevent restoring outdated files across editor updates.
+- Added Tailwind `.prose` selectors to ensure RTL formatting for assistant responses and chat markdown containers.
+
 ## [1.0.14] - 2026-10-18
 ### Fixed
 - Removed the bidi override that reversed English letters in Cursor Markdown rich text. Each paragraph now follows its own text direction; code stays LTR.

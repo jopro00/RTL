@@ -6,7 +6,7 @@ const cp = require('child_process');
 const crypto = require('crypto');
 
 const BACKUP_EXT = '.rtlbak';
-const PATCH_VERSION = '1.0.14';
+const PATCH_VERSION = '1.0.15';
 const STYLE_ID = 'rtl-patcher-style';
 const CSS_MARKER_START = `/* RTL-PATCH-START v${PATCH_VERSION} */`;
 const CSS_MARKER_END = '/* RTL-PATCH-END */';
@@ -58,7 +58,7 @@ function getAppRoots() {
 		roots.push(vscode.env.appRoot);
 	}
 
-	const appNames = ['Cursor', 'cursor', 'Antigravity', 'Code', 'Code - Insiders'];
+	const appNames = ['Cursor', 'cursor', 'Antigravity', 'Antigravity IDE', 'Code', 'Code - Insiders'];
 	for (const name of appNames) {
 		roots.push(
 			path.join(programFiles, name, 'resources', 'app'),
@@ -112,6 +112,8 @@ function getHtmlTargets() {
 		const htmlCandidates = [
 			path.join(appRoot, 'out', 'vs', 'code', 'electron-sandbox', 'workbench', 'workbench.html'),
 			path.join(appRoot, 'out', 'vs', 'code', 'electron-browser', 'workbench', 'workbench.html'),
+			path.join(appRoot, 'out', 'vs', 'code', 'electron-browser', 'workbench', 'workbench-jetski-agent.html'),
+			path.join(appRoot, 'out', 'vs', 'code', 'electron-browser', 'workbench', 'workbench-jetski-agent-dev.html'),
 			path.join(appRoot, 'extensions', 'antigravity', 'cascade-panel.html')
 		];
 		for (const htmlPath of htmlCandidates) {
@@ -245,9 +247,29 @@ function stripMarkedBlock(content, startRe, endMarker) {
 
 function backupFile(filePath) {
 	const backupPath = filePath + BACKUP_EXT;
+	const currentContent = fs.readFileSync(filePath, 'utf8');
+
+	const isCurrentlyPatched =
+		ANY_CSS_START.test(currentContent) ||
+		ANY_HTML_START.test(currentContent) ||
+		currentContent.includes(MARKDOWN_EXT_DIR_RTL);
+
 	if (!fs.existsSync(backupPath)) {
+		if (isCurrentlyPatched) {
+			let clean = stripMarkedBlock(currentContent, ANY_CSS_START, CSS_MARKER_END);
+			clean = stripMarkedBlock(clean, ANY_HTML_START, HTML_MARKER_END);
+			clean = clean.split(MARKDOWN_EXT_DIR_RTL).join(MARKDOWN_EXT_DIR_AUTO);
+			fs.writeFileSync(backupPath, clean, 'utf8');
+		} else {
+			fs.copyFileSync(filePath, backupPath);
+		}
+	} else if (!isCurrentlyPatched) {
 		fs.copyFileSync(filePath, backupPath);
 	}
+	if (!fs.existsSync(backupPath)) {
+		throw new Error(`Backup was not created for ${filePath}`);
+	}
+	fs.readFileSync(backupPath);
 	return backupPath;
 }
 
@@ -316,13 +338,15 @@ function isHtmlPatchApplied(htmlPath) {
 	}
 }
 
-function cleanupLegacyHtmlPatch(htmlPath) {
+function cleanupLegacyHtmlPatch(htmlPath, { createBackup = true } = {}) {
 	let content = fs.readFileSync(htmlPath, 'utf8');
 	const hadLegacy = content.includes(LEGACY_INJECT_SCRIPT) || /<script[^>]+rtl-inject\.js/i.test(content);
 	if (!hadLegacy) {
 		return false;
 	}
-	backupFile(htmlPath);
+	if (createBackup) {
+		backupFile(htmlPath);
+	}
 	content = content.replace(/<script\b[^>]*\bsrc=["'][^"']*rtl-inject\.js[^"']*["'][^>]*>\s*<\/script>/gi, '');
 	writePatched(htmlPath, content);
 	const injectPath = path.join(path.dirname(htmlPath), LEGACY_INJECT_SCRIPT);
@@ -377,23 +401,57 @@ function patchJs(filePath) {
 	writePatched(filePath, content);
 }
 
-function restoreCss(filePath) {
+function restoreFile(filePath, isHtml, removeBackup = true) {
 	const backupPath = filePath + BACKUP_EXT;
-	if (!fs.existsSync(backupPath)) {
-		return false;
+	if (fs.existsSync(backupPath)) {
+		let content = fs.readFileSync(backupPath, 'utf8');
+		if (isHtml) {
+			content = stripMarkedBlock(content, ANY_HTML_START, HTML_MARKER_END);
+		} else {
+			content = stripMarkedBlock(content, ANY_CSS_START, CSS_MARKER_END);
+		}
+		writePatched(filePath, content);
+		if (removeBackup) {
+			try {
+				fs.unlinkSync(backupPath);
+			} catch (e) {
+				console.error('Failed to remove backup:', e);
+			}
+		}
+		return true;
 	}
-	writePatched(filePath, fs.readFileSync(backupPath, 'utf8'));
-	return true;
+
+	try {
+		let content = fs.readFileSync(filePath, 'utf8');
+		const hasPatch = isHtml ? ANY_HTML_START.test(content) : ANY_CSS_START.test(content);
+		if (hasPatch) {
+			content = isHtml
+				? stripMarkedBlock(content, ANY_HTML_START, HTML_MARKER_END)
+				: stripMarkedBlock(content, ANY_CSS_START, CSS_MARKER_END);
+			writePatched(filePath, content);
+			return true;
+		}
+	} catch (e) {
+		console.error('Failed to read file for strip restore:', e);
+	}
+	return false;
+}
+
+function restoreCss(filePath) {
+	return restoreFile(filePath, false);
 }
 
 function restoreHtml(htmlPath) {
-	cleanupLegacyHtmlPatch(htmlPath);
-	const backupPath = htmlPath + BACKUP_EXT;
-	if (!fs.existsSync(backupPath)) {
-		return false;
+	const restored = restoreFile(htmlPath, true, false);
+	const cleanedLegacyPatch = cleanupLegacyHtmlPatch(htmlPath, { createBackup: false });
+	if (restored) {
+		try {
+			fs.unlinkSync(htmlPath + BACKUP_EXT);
+		} catch (e) {
+			console.error('Failed to remove backup:', e);
+		}
 	}
-	writePatched(htmlPath, fs.readFileSync(backupPath, 'utf8'));
-	return true;
+	return restored || cleanedLegacyPatch;
 }
 
 function withWriteRetry(filePath, action) {

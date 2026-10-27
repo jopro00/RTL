@@ -2,7 +2,7 @@
 	"name": "rtl-everywhere",
 	"displayName": "RTL Everywhere",
 	"description": "Arabic RTL in Cursor, Antigravity and Markdown preview, with readable English and LTR code.",
-	"version": "1.0.14",
+	"version": "1.0.15",
 	"publisher": "jopro00",
 	"license": "MIT",
 	"repository": {

@@ -20,26 +20,28 @@ function fixture(t, { legacy = false, cursor = false } = {}) {
   const preview = put('extensions/markdown-language-features/media/markdown.css', '/* markdown styles */');
   const markdown = put('extensions/markdown-language-features/dist/extension.js', 'class="markdown-body" dir="auto"');
   const cascade = put('extensions/antigravity/cascade-panel.html', '<html><body><div id="react-app"></div></body></html>');
+  const jetski = put('out/vs/code/electron-browser/workbench/workbench-jetski-agent.html', '<html><body><div id="jetski-app"></div></body></html>');
   const patcher = loadExtension(root, { appName: cursor ? 'Cursor' : 'Antigravity IDE' });
   if (cursor) fs.writeFileSync(js, patcher.JS_REPLACEMENTS.map((rep) => rep.to).join(';'));
-  const originals = new Map([css, html, js, preview, markdown, cascade].map((file) => [file, fs.readFileSync(file, 'utf8')]));
+  const originals = new Map([css, html, js, preview, markdown, cascade, jetski].map((file) => [file, fs.readFileSync(file, 'utf8')]));
   if (legacy) {
     for (const [file, content] of originals) fs.writeFileSync(file + '.rtlbak', content);
     for (const file of [css, preview]) fs.appendFileSync(file, '\n/* RTL-PATCH-START v1.0.6 */\np { unicode-bidi: isolate-override }\n/* RTL-PATCH-END */');
     fs.writeFileSync(html, '<html><body><!-- RTL-PATCH-START v1.0.6 --><style id="rtl-patcher-style">bad css</style><!-- RTL-PATCH-END --></body></html>');
     fs.writeFileSync(markdown, 'class="markdown-body" dir="rtl"');
   }
-  return { root, put, css, html, js, preview, markdown, cascade, originals, patcher };
+  return { root, put, css, html, js, preview, markdown, cascade, jetski, originals, patcher };
 }
 
 test('Antigravity applies without Cursor JS markers; reload prompt and repeated enable work', (t) => {
-  const { css, cascade, js, originals, patcher } = fixture(t);
+  const { css, cascade, jetski, js, originals, patcher } = fixture(t);
   patcher.applyPatch();
   assert.equal(patcher.isPatchAlreadyActive(), true);
   assert.match(patcher.status.text, /On/);
   assert.match(patcher.messages.info[0], /Reload Antigravity IDE/);
   assert.equal(patcher.messages.warnings.length, 0);
   assert.match(fs.readFileSync(cascade, 'utf8'), /md-divider-spacing/);
+  assert.match(fs.readFileSync(jetski, 'utf8'), /md-divider-spacing/);
   assert.equal(fs.readFileSync(js, 'utf8'), originals.get(js));
   const first = fs.readFileSync(css, 'utf8');
   patcher.applyPatch();
@@ -47,7 +49,10 @@ test('Antigravity applies without Cursor JS markers; reload prompt and repeated 
   assert.equal(patcher.messages.info.length, 1);
   patcher.restoreBackup();
   assert.equal(patcher.isPatchAlreadyActive(), false);
-  for (const [file, original] of originals) assert.equal(fs.readFileSync(file, 'utf8'), original);
+  for (const [file, original] of originals) {
+    assert.equal(fs.readFileSync(file, 'utf8'), original);
+    assert.equal(fs.existsSync(file + '.rtlbak'), false);
+  }
 });
 
 test('old patch upgrades all files, removes overrides and Cursor-only rewrites', (t) => {
